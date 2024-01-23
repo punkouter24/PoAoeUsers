@@ -34,20 +34,20 @@ namespace PoAoeUsers
 
 
 
+            //string connectionString = builder.Configuration.GetConnectionString("DefaultConnection") ?? throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
+            //_ = builder.Services.AddDbContext<ApplicationDbContext>(options =>
+            //    options.UseSqlServer(connectionString));
+            //_ = builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 
 
-
-            //    string connectionString = builder.Configuration.GetConnectionString("DefaultConnection") ?? throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
-            //    _ = builder.Services.AddDbContext<ApplicationDbContext>(options => options.UseSqlite(connectionString));
-            //    _ = builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 
 
 
 
             string connectionString = builder.Configuration.GetConnectionString("DefaultConnection") ?? throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
-            _ = builder.Services.AddDbContext<ApplicationDbContext>(options =>
-                options.UseSqlServer(connectionString));
+            _ = builder.Services.AddDbContext<ApplicationDbContext>(options => options.UseSqlite(connectionString));
             _ = builder.Services.AddDatabaseDeveloperPageExceptionFilter();
+
 
 
 
