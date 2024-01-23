@@ -28,7 +28,7 @@
                         </tr>
                     </thead>
                     <tbody>
-                        @foreach (var player in players)
+                        @foreach (var player in players1v1)
                         {
                             <tr>
                                 <td>@player.Name</td>
@@ -47,7 +47,7 @@
                         </tr>
                     </thead>
                     <tbody>
-                        @foreach (var player in players)
+                        @foreach (var player in players4v4)
                         {
                             <tr>
                                 <td>@player.Name</td>
@@ -65,6 +65,8 @@
 </CascadingAuthenticationState>
 
 @code {
+    private List<ListItem> players1v1;
+    private List<ListItem> players4v4;
     private List<ListItem> players;
 
     protected override async Task OnInitializedAsync()
@@ -85,7 +87,9 @@
                 }
             }
 
-            players = players.OrderBy(p => p.Name).ToList();
+          //  players = players.OrderBy(p => p.Name).ToList();
+            players1v1 = players.OrderByDescending(p => p.OneVOneRating).ToList(); // Sort 1v1 ratings
+            players4v4 = players.OrderByDescending(p => p.FourVFourRating).ToList(); // Sort 4v4 ratings
         }
     }
 }
