@@ -1,0 +1,91 @@
+﻿@page "/"
+@using PoAoeUsers.Data
+@using PoAoeUsers.Services
+@inject ListItemService ListItemService
+@inject UserManager<ApplicationUser> UserManager
+@inject IHttpContextAccessor HttpContextAccessor
+@inject AuthenticationStateProvider AuthenticationStateProvider
+<CascadingAuthenticationState>
+    <AuthorizeView>
+        <Authorized>
+            <h3>AOE4 Player Ranks</h3>
+            @if (players == null)
+            {
+                <p><em>Loading...</em></p>
+            }
+            else if (!players.Any())
+            {
+                <p>No players found.</p>
+            }
+            else
+            {
+                <h4>1v1 Ratings</h4>
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Name</th>
+                            <th>1v1 Rating</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var player in players)
+                        {
+                            <tr>
+                                <td>@player.Name</td>
+                                <td>@player.OneVOneRating</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+
+                <h4>4v4 Ratings</h4>
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Name</th>
+                            <th>4v4 Rating</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var player in players)
+                        {
+                            <tr>
+                                <td>@player.Name</td>
+                                <td>@player.FourVFourRating</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            }
+        </Authorized>
+        <NotAuthorized>
+            <p>You are not logged in. Please <a href="Account/Login">Login</a>.</p>
+        </NotAuthorized>
+    </AuthorizeView>
+</CascadingAuthenticationState>
+
+@code {
+    private List<ListItem> players;
+
+    protected override async Task OnInitializedAsync()
+    {
+        var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+        if (authState.User.Identity.IsAuthenticated)
+        {
+            var user = await UserManager.GetUserAsync(HttpContextAccessor.HttpContext.User);
+            var listItems = await ListItemService.GetListItemsAsync(user.Id);
+            players = new List<ListItem>();
+
+            foreach (var listItem in listItems)
+            {
+                var playerData = await ListItemService.GetPlayerDataAsync(listItem.Name);
+                if (playerData != null)
+                {
+                    players.Add(playerData);
+                }
+            }
+
+            players = players.OrderBy(p => p.Name).ToList();
+        }
+    }
+}

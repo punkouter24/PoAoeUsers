@@ -1,0 +1,81 @@
+﻿@page "/addusers"
+
+@using System.ComponentModel.DataAnnotations
+@using Microsoft.AspNetCore.Authentication
+@using Microsoft.AspNetCore.Identity
+@using PoAoeUsers.Data
+@using PoAoeUsers.Services
+@using System.Security.Claims
+
+@inject ListItemService ListItemService
+@inject UserManager<ApplicationUser> UserManager
+@inject IHttpContextAccessor HttpContextAccessor
+@inject AuthenticationStateProvider AuthenticationStateProvider
+
+<h3>Add Items</h3>
+
+<div>
+    <input type="text" @bind="newItemName" />
+    <button @onclick="AddItem">Add</button>
+</div>
+
+@if (listItems.Any())
+{
+    <ul>
+        @foreach (var item in listItems)
+        {
+            <li>
+                @item.Name
+                <button @onclick="() => DeleteItem(item.Id)">Delete</button>
+            </li>
+        }
+    </ul>
+}
+else
+{
+    <p>No items in the list.</p>
+}
+
+
+@code {
+    private List<ListItem> listItems = new List<ListItem>();
+    private string newItemName;
+
+    protected override async Task OnInitializedAsync()
+    {
+        var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+        var user = authState.User;
+
+        if (user.Identity.IsAuthenticated)
+        {
+            var userId = user.FindFirst(c => c.Type == ClaimTypes.NameIdentifier).Value;
+            listItems = await ListItemService.GetListItemsAsync(userId);
+        }
+        else
+        {
+            // Redirect to login or handle the unauthenticated user case.
+        }
+    }
+
+    private async Task AddItem()
+    {
+        if (!string.IsNullOrWhiteSpace(newItemName))
+        {
+            var listItem = new ListItem
+                {
+                    Name = newItemName,
+                    UserId = (await UserManager.GetUserAsync(HttpContextAccessor.HttpContext.User)).Id
+                };
+
+            await ListItemService.AddListItemAsync(listItem);
+            listItems.Add(listItem);
+            newItemName = string.Empty;
+        }
+    }
+
+    private async Task DeleteItem(int itemId)
+    {
+        await ListItemService.DeleteListItemAsync(itemId);
+        listItems.RemoveAll(item => item.Id == itemId);
+    }
+}
