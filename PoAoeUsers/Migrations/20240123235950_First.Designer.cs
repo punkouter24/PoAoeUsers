@@ -11,7 +11,7 @@ using PoAoeUsers.Data;
 namespace PoAoeUsers.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20240123205710_First")]
+    [Migration("20240123235950_First")]
     partial class First
     {
         /// <inheritdoc />
@@ -218,14 +218,11 @@ namespace PoAoeUsers.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("INTEGER");
 
-                    b.Property<int>("FourVFourRating")
-                        .HasColumnType("INTEGER");
-
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasColumnType("TEXT");
 
-                    b.Property<int>("OneVOneRating")
+                    b.Property<int>("Rating")
                         .HasColumnType("INTEGER");
 
                     b.Property<string>("UserId")

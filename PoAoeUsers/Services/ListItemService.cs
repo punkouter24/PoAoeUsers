@@ -52,7 +52,7 @@ namespace PoAoeUsers.Services
 
         //https://aoe4world.com/api/v0/players/search?query=barbecue
 
-        public async Task<ListItem?> GetPlayerDataAsync(string playerName)
+        public async Task<ListItem?> GetPlayerDataAsync(string playerName, string mode)
         {
             string url = $"{_baseUrl}/players/search?query={playerName}"; // Adjust URL based on the actual API endpoint
             try
@@ -66,8 +66,9 @@ namespace PoAoeUsers.Services
                     {
                         Name = player.Name,
                         // Set UserId if necessary
-                        OneVOneRating = player.Leaderboards.ContainsKey("rm_1v1_elo") ? player.Leaderboards["rm_1v1_elo"].Rating : 0,
-                        FourVFourRating = player.Leaderboards.ContainsKey("rm_4v4_elo") ? player.Leaderboards["rm_4v4_elo"].Rating : 0
+                       // OneVOneRating = player.Leaderboards.ContainsKey("rm_1v1_elo") ? player.Leaderboards["rm_1v1_elo"].Rating : 0,
+                      //  FourVFourRating = player.Leaderboards.ContainsKey("rm_4v4_elo") ? player.Leaderboards["rm_4v4_elo"].Rating : 0
+                       Rating = player.Leaderboards.ContainsKey(mode) ? player.Leaderboards[mode].Rating : 0
                     };
 
                     return listItem;
@@ -83,8 +84,6 @@ namespace PoAoeUsers.Services
         }
 
 
-
-
         public class PlayerApiResponse
         {
             public int TotalCount { get; set; }
@@ -95,14 +94,11 @@ namespace PoAoeUsers.Services
         {
             public string Name { get; set; }
             public Dictionary<string, Leaderboard> Leaderboards { get; set; }
-            // Include other properties as needed
         }
 
         public class Leaderboard
         {
             public int Rating { get; set; }
-            // Include other properties as needed
         }
-
     }
 }

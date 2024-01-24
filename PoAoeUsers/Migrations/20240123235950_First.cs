@@ -164,8 +164,7 @@ namespace PoAoeUsers.Migrations
                         .Annotation("Sqlite:Autoincrement", true),
                     Name = table.Column<string>(type: "TEXT", nullable: false),
                     UserId = table.Column<string>(type: "TEXT", nullable: false),
-                    OneVOneRating = table.Column<int>(type: "INTEGER", nullable: false),
-                    FourVFourRating = table.Column<int>(type: "INTEGER", nullable: false)
+                    Rating = table.Column<int>(type: "INTEGER", nullable: false)
                 },
                 constraints: table =>
                 {

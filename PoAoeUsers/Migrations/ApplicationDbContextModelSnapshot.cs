@@ -215,14 +215,11 @@ namespace PoAoeUsers.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("INTEGER");
 
-                    b.Property<int>("FourVFourRating")
-                        .HasColumnType("INTEGER");
-
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasColumnType("TEXT");
 
-                    b.Property<int>("OneVOneRating")
+                    b.Property<int>("Rating")
                         .HasColumnType("INTEGER");
 
                     b.Property<string>("UserId")

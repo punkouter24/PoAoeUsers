@@ -9,53 +9,30 @@
     <AuthorizeView>
         <Authorized>
             <h3>AOE4 Player Ranks</h3>
-            @if (players == null)
+            @if (players1v1 == null)
             {
-                <p><em>Loading...</em></p>
+                <p><em>Loading...</em></p> <!-- Consider replacing with a spinner -->
             }
-            else if (!players.Any())
+            else if (!players1v1.Any())
             {
                 <p>No players found.</p>
             }
             else
             {
-                <h4>1v1 Ratings</h4>
-                <table class="table">
-                    <thead>
-                        <tr>
-                            <th>Name</th>
-                            <th>1v1 Rating</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @foreach (var player in players1v1)
-                        {
-                            <tr>
-                                <td>@player.Name</td>
-                                <td>@player.OneVOneRating</td>
-                            </tr>
-                        }
-                    </tbody>
-                </table>
+                <PlayerRatingsTable Items="players1v1" Title="1v1 Ratings" RatingTitle="1v1 Rating" />
+            }
 
-                <h4>4v4 Ratings</h4>
-                <table class="table">
-                    <thead>
-                        <tr>
-                            <th>Name</th>
-                            <th>4v4 Rating</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @foreach (var player in players4v4)
-                        {
-                            <tr>
-                                <td>@player.Name</td>
-                                <td>@player.FourVFourRating</td>
-                            </tr>
-                        }
-                    </tbody>
-                </table>
+            @if (players4v4 == null)
+            {
+                <p><em>Loading...</em></p> <!-- Consider replacing with a spinner -->
+            }
+            else if (!players4v4.Any())
+            {
+                <p>No players found.</p>
+            }
+            else
+            {
+                <PlayerRatingsTable Items="players4v4" Title="4v4 Ratings" RatingTitle="4v4 Rating" />
             }
         </Authorized>
         <NotAuthorized>
@@ -65,9 +42,8 @@
 </CascadingAuthenticationState>
 
 @code {
-    private List<ListItem> players1v1;
-    private List<ListItem> players4v4;
-    private List<ListItem> players;
+    private List<ListItem> players1v1 = new();
+    private List<ListItem> players4v4 = new();
 
     protected override async Task OnInitializedAsync()
     {
@@ -76,20 +52,26 @@
         {
             var user = await UserManager.GetUserAsync(HttpContextAccessor.HttpContext.User);
             var listItems = await ListItemService.GetListItemsAsync(user.Id);
-            players = new List<ListItem>();
 
             foreach (var listItem in listItems)
             {
-                var playerData = await ListItemService.GetPlayerDataAsync(listItem.Name);
-                if (playerData != null)
+                //1v1
+                var playerData1v1 = await ListItemService.GetPlayerDataAsync(listItem.Name, "rm_1v1_elo");
+                if (playerData1v1 != null)
                 {
-                    players.Add(playerData);
+                    players1v1.Add(playerData1v1);
+                }
+
+                //4v4
+                var playerData4v4 = await ListItemService.GetPlayerDataAsync(listItem.Name, "rm_4v4_elo");
+                if (playerData4v4 != null)
+                {
+                    players4v4.Add(playerData4v4);
                 }
             }
 
-          //  players = players.OrderBy(p => p.Name).ToList();
-            players1v1 = players.OrderByDescending(p => p.OneVOneRating).ToList(); // Sort 1v1 ratings
-            players4v4 = players.OrderByDescending(p => p.FourVFourRating).ToList(); // Sort 4v4 ratings
+            players1v1 = players1v1.OrderByDescending(p => p.Rating).ToList(); // Sort 1v1 ratings
+            players4v4 = players4v4.OrderByDescending(p => p.Rating).ToList(); // Sort 4v4 ratings
         }
     }
 }

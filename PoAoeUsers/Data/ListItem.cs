@@ -4,7 +4,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace PoAoeUsers.Data
 {
-    public class ListItem
+    public class ListItem : IPlayerRating
     {
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
@@ -19,7 +19,9 @@ namespace PoAoeUsers.Data
         [ForeignKey("UserId")]
         public ApplicationUser User { get; set; }
 
-        public int OneVOneRating { get; set; }
-        public int FourVFourRating { get; set; }
+        //public int OneVOneRating { get; set; }
+        //public int FourVFourRating { get; set; }
+
+        public int Rating { get; set; }
     }
 }
