@@ -6,11 +6,16 @@ using SendGrid.Helpers.Mail;
 
 namespace PoAoeUsers.Components.Account
 {
-    // Remove the "else if (EmailSender is IdentityNoOpEmailSender)" block from RegisterConfirmation.razor after updating with a real implementation.
     internal sealed class IdentityNoOpEmailSender : IEmailSender<ApplicationUser>
     {
-        //  private readonly IEmailSender emailSender = new NoOpEmailSender();
-        private readonly IEmailSender emailSender = new RealEmailSender("SG.5WpW7nKtTpaIaq-If_fdFA.b3xW2GtGGbe7aIFpFwWfw9yZwobK6ytyIPDsFD6wTPY");
+        private readonly string apiKey;
+        private readonly IEmailSender emailSender;
+
+        public IdentityNoOpEmailSender(string apiKey)
+        {
+            this.apiKey = apiKey;
+            this.emailSender = new RealEmailSender(this.apiKey); // Initialize it here
+        }
 
         public Task SendConfirmationLinkAsync(ApplicationUser user, string email, string confirmationLink)
         {
@@ -45,13 +50,8 @@ namespace PoAoeUsers.Components.Account
             EmailAddress to = new("punkouter24@gmail.com");
             SendGridMessage msg = MailHelper.CreateSingleEmail(from, to, subject, "", htmlMessage);
             var response = await client.SendEmailAsync(msg);
-
-            // Optionally, you can check the response to handle success or failure
         }
     }
-
-
 }
-
 
 
