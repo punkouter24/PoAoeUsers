@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.EntityFrameworkCore;
 using PoAoeUsers.Components;
 using PoAoeUsers.Components.Account;
@@ -94,7 +95,20 @@ namespace PoAoeUsers
             _ = builder.Services.AddServerSideBlazor().AddCircuitOptions(options => { options.DetailedErrors = true; });
 
 
-            _ = builder.Services.AddSingleton<IEmailSender<ApplicationUser>, IdentityNoOpEmailSender>();
+            var sendGridApiKey = builder.Configuration["SendGridKey"];
+
+
+            //builder.Services.AddSingleton<IEmailSender>(new RealEmailSender(sendGridApiKey));
+
+            //  builder.Services.AddTransient<IEmailSender, RealEmailSender>();
+          //  builder.Services.AddTransient<IEmailSender>(provider => new RealEmailSender(sendGridApiKey));
+
+              _ = builder.Services.AddSingleton<IEmailSender<ApplicationUser>, IdentityNoOpEmailSender>();
+             //   _ = builder.Services.AddScoped<IEmailSender<ApplicationUser>, RealEmailSender>();
+
+
+
+
             _ = builder.Services.AddScoped<ListItemService>();
             _ = builder.Services.AddHttpContextAccessor();
             _ = builder.Services.AddHttpClient();
