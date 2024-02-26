@@ -30,9 +30,19 @@ namespace PoAoeUsers
                 })
                 .AddIdentityCookies();
 
+            builder.Services.AddAuthentication().AddGoogle(googleOptions =>
+            {
+                // googleOptions.ClientId = builder.Configuration["Authentication:Google:ClientId"];
+                //  googleOptions.ClientSecret = builder.Configuration["Authentication:Google:ClientSecret"];
 
+                googleOptions.ClientId = "498983659463-9ltus4nv5ghlpobk4kd38hd5dfkd4hgi.apps.googleusercontent.com";
+                googleOptions.ClientSecret = "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";
+                googleOptions.SignInScheme = IdentityConstants.ExternalScheme;
+            });
 
+            // 498983659463 - 9ltus4nv5ghlpobk4kd38hd5dfkd4hgi.apps.googleusercontent.com
 
+            // GOCSPX - 81Ykc3ioQEBNShsqxpPwmkP49b - P
 
             //string connectionString = builder.Configuration.GetConnectionString("DefaultConnection") ?? throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
             //_ = builder.Services.AddDbContext<ApplicationDbContext>(options =>
