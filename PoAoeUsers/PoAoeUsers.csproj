@@ -19,4 +19,10 @@
     <PackageReference Include="SQLite" Version="3.13.0" />
   </ItemGroup>
 
+  <ItemGroup>
+    <None Update="PoAoeUsers.db">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
 </Project>
