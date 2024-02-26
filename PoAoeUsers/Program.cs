@@ -4,6 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using PoAoeUsers.Components;
 using PoAoeUsers.Components.Account;
 using PoAoeUsers.Data;
+using PoAoeUsers.Models;
 using PoAoeUsers.Services;
 
 namespace PoAoeUsers
@@ -30,15 +31,31 @@ namespace PoAoeUsers
                 })
                 .AddIdentityCookies();
 
+
+
+
+            // Bind Google settings
+            builder.Services.Configure<GoogleAuthConfig>(builder.Configuration.GetSection("Google"));
+
             builder.Services.AddAuthentication().AddGoogle(googleOptions =>
             {
-                // googleOptions.ClientId = builder.Configuration["Authentication:Google:ClientId"];
-                //  googleOptions.ClientSecret = builder.Configuration["Authentication:Google:ClientSecret"];
-
-                googleOptions.ClientId = "498983659463-9ltus4nv5ghlpobk4kd38hd5dfkd4hgi.apps.googleusercontent.com";
-                googleOptions.ClientSecret = "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";
+                // Resolve Google configuration options
+                var googleConfig = builder.Configuration.GetSection("Google").Get<GoogleAuthConfig>();
+                googleOptions.ClientId = googleConfig.ClientId;
+                googleOptions.ClientSecret = googleConfig.ClientSecret;
                 googleOptions.SignInScheme = IdentityConstants.ExternalScheme;
             });
+
+
+            //builder.Services.AddAuthentication().AddGoogle(googleOptions =>
+            //{
+            //    googleOptions.ClientId = "498983659463-9ltus4nv5ghlpobk4kd38hd5dfkd4hgi.apps.googleusercontent.com";
+            //    googleOptions.ClientSecret = "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";
+            //    googleOptions.SignInScheme = IdentityConstants.ExternalScheme;
+            //});
+
+            //  builder.Services.AddScoped<IGoogleAuthService, GoogleAuthService>();
+            // builder.Services.Configure<GoogleAuthConfig>(builder.Configuration.GetSection("Google"));
 
             // 498983659463 - 9ltus4nv5ghlpobk4kd38hd5dfkd4hgi.apps.googleusercontent.com
 
