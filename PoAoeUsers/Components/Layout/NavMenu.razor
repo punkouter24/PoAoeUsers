@@ -5,6 +5,7 @@
 <div class="top-row ps-3 navbar navbar-dark">
     <div class="container-fluid">
         <a class="navbar-brand" href="">PoAoeUsers</a>
+      
     </div>
 </div>
 
@@ -20,12 +21,8 @@
         <AuthorizeView>
             <Authorized>
                 <div class="nav-item px-3">
-                    @{
-                         var authState = AuthenticationStateProvider.GetAuthenticationStateAsync().Result;
-                         var user = authState.User;
-                         var userName = user.Identity?.Name ?? "User";
-                    }
-                    <span style="color:whitesmoke">Welcome, @userName!</span>
+                 
+                   
                 </div>
                 <div class="nav-item px-3">
                     <NavLink class="nav-link" href="addusers">
@@ -40,6 +37,15 @@
                             <span class="bi bi-arrow-bar-left-nav-menu" aria-hidden="true"></span> Logout
                         </button>
                     </form>
+                </div>
+                <div>
+                      <br />
+        @{
+            var authState = AuthenticationStateProvider.GetAuthenticationStateAsync().Result;
+            var user = authState.User;
+            var userName = user.Identity?.Name ?? "User";
+        }
+        <span style="color:whitesmoke">Welcome, @userName!</span>
                 </div>
             </Authorized>
             <NotAuthorized>
