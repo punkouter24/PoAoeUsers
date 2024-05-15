@@ -5,43 +5,82 @@
 @inject UserManager<ApplicationUser> UserManager
 @inject IHttpContextAccessor HttpContextAccessor
 @inject AuthenticationStateProvider AuthenticationStateProvider
+
 <CascadingAuthenticationState>
     <AuthorizeView>
         <Authorized>
-            <h3>AOE4 Player Ranks</h3>
-
-            <table class="player-ratings-table">
-                @if (players1v1 == null)
-                {
-                    <p><em>Loading...</em></p> <!-- Consider replacing with a spinner -->
-                }
-                else if (!players1v1.Any())
-                {
-                    <p>No players found in 1v1</p>
-                }
-                else
-                {
-                    <PlayerRatingsTable Items="players1v1" Title="1v1 Ratings" RatingTitle="1v1 Rating" />
-                }
-            </table>
-
-            <table class="player-ratings-table">
-                @if (players4v4 == null)
-                {
-                    <p><em>Loading...</em></p> <!-- Consider replacing with a spinner -->
-                }
-                else if (!players4v4.Any())
-                {
-                    <p>No players found in 4v4</p>
-                }
-                else
-                {
-                    <PlayerRatingsTable Items="players4v4" Title="4v4 Ratings" RatingTitle="4v4 Rating" />
-                }
-            </table>
+            <div class="container mt-4">
+                <h3 class="mb-4">AOE4 Player Ranks</h3>
+                <div class="mb-3">
+                    <select @bind="selectedMode" class="form-select">
+                        <option value="4v4">4v4</option>
+                        <option value="3v3">3v3</option>
+                        <option value="2v2">2v2</option>
+                        <option value="1v1">1v1</option>
+                    </select>
+                </div>
+                <div class="table-responsive">
+                    <table class="table table-striped table-bordered player-ratings-table">
+                        @if (isLoading)
+                        {
+                            <tr>
+                                <td colspan="3" class="text-center">
+                                    <div class="spinner-border" role="status">
+                                        <span class="visually-hidden">Loading...</span>
+                                    </div>
+                                </td>
+                            </tr>
+                        }
+                        else if (selectedMode == "1v1")
+                        {
+                            @if (!players1v1.Any())
+                            {
+                                <tr><td colspan="3" class="text-center">No players found in 1v1</td></tr>
+                            }
+                            else
+                            {
+                                <PlayerRatingsTable Items="players1v1" Title="1v1 Ratings" RatingTitle="1v1 Rating" />
+                            }
+                        }
+                        else if (selectedMode == "2v2")
+                        {
+                            @if (!players2v2.Any())
+                            {
+                                <tr><td colspan="3" class="text-center">No players found in 2v2</td></tr>
+                            }
+                            else
+                            {
+                                <PlayerRatingsTable Items="players2v2" Title="2v2 Ratings" RatingTitle="2v2 Rating" />
+                            }
+                        }
+                        else if (selectedMode == "3v3")
+                        {
+                            @if (!players3v3.Any())
+                            {
+                                <tr><td colspan="3" class="text-center">No players found in 3v3</td></tr>
+                            }
+                            else
+                            {
+                                <PlayerRatingsTable Items="players3v3" Title="3v3 Ratings" RatingTitle="3v3 Rating" />
+                            }
+                        }
+                        else if (selectedMode == "4v4")
+                        {
+                            @if (!players4v4.Any())
+                            {
+                                <tr><td colspan="3" class="text-center">No players found in 4v4</td></tr>
+                            }
+                            else
+                            {
+                                <PlayerRatingsTable Items="players4v4" Title="4v4 Ratings" RatingTitle="4v4 Rating" />
+                            }
+                        }
+                    </table>
+                </div>
+            </div>
         </Authorized>
         <NotAuthorized>
-            <p>You are not logged in. Please <a href="Account/Login">Login</a>.</p>
+            <p class="text-center mt-4">You are not logged in. Please <a href="Account/Login">Login</a>.</p>
         </NotAuthorized>
     </AuthorizeView>
 </CascadingAuthenticationState>
@@ -49,10 +88,15 @@
 @code {
     private List<ListItem> players1v1 = new();
     private List<ListItem> players4v4 = new();
+    private List<ListItem> players2v2 = new();
+    private List<ListItem> players3v3 = new();
+    private string selectedMode = "4v4";
+    private bool isLoading = true;
 
     protected override async Task OnInitializedAsync()
     {
         var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+
         if (authState.User.Identity.IsAuthenticated)
         {
             var user = await UserManager.GetUserAsync(HttpContextAccessor.HttpContext.User);
@@ -70,6 +114,20 @@
                         players1v1.Add(playerData1v1);
                     }
 
+                    //2v2
+                    var playerData2v2 = await ListItemService.GetPlayerDataAsync(listItem.Name, "rm_2v2_elo");
+                    if (playerData2v2 != null)
+                    {
+                        players2v2.Add(playerData2v2);
+                    }
+
+                    //3v3
+                    var playerData3v3 = await ListItemService.GetPlayerDataAsync(listItem.Name, "rm_3v3_elo");
+                    if (playerData3v3 != null)
+                    {
+                        players3v3.Add(playerData3v3);
+                    }
+
                     //4v4
                     var playerData4v4 = await ListItemService.GetPlayerDataAsync(listItem.Name, "rm_4v4_elo");
                     if (playerData4v4 != null)
@@ -78,14 +136,13 @@
                     }
                 }
 
-                players1v1 = players1v1.OrderByDescending(p => p.Rating).ToList(); // Sort 1v1 ratings
-                players4v4 = players4v4.OrderByDescending(p => p.Rating).ToList(); // Sort 4v4 ratings
-                
+                // Sort the player lists by rating in descending order
+                players1v1 = players1v1.OrderByDescending(p => p.Rating).ToList();
+                players2v2 = players2v2.OrderByDescending(p => p.Rating).ToList();
+                players3v3 = players3v3.OrderByDescending(p => p.Rating).ToList();
+                players4v4 = players4v4.OrderByDescending(p => p.Rating).ToList();
             }
-
-
-
-          
         }
+        isLoading = false;
     }
 }
