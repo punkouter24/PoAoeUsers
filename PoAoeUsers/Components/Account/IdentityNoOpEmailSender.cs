@@ -46,8 +46,8 @@ namespace PoAoeUsers.Components.Account
         {
             SendGridClient client = new(apiKey);
             EmailAddress from = new("punkouter24@gmail.com", "Punkouter Software");
-            // EmailAddress to = new(email);
-            EmailAddress to = new("punkouter24@gmail.com");
+             EmailAddress to = new(email);
+            //EmailAddress to = new("punkouter24@gmail.com");
             SendGridMessage msg = MailHelper.CreateSingleEmail(from, to, subject, "", htmlMessage);
             var response = await client.SendEmailAsync(msg);
         }
